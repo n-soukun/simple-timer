@@ -11,45 +11,50 @@ export const useTimer = ({
 }: useTimerProps = {}) => {
   const [defaultTime, setDefaultTime] = useState<number>(sec);
   const [time, setTime] = useState<number>(sec);
-  const [timmerId, setTimmerId] = useState<number | null>(null);
+  const [timerId, setTimerId] = useState<number | null>(null);
   const [state, setState] = useState<"start" | "pause" | "stop">("stop");
 
-  const pauseTimer = useCallback(() => {
-    setState("pause");
-    if (timmerId) {
-      clearInterval(timmerId);
-      setTimmerId(null);
-    }
-  }, [timmerId]);
-
-  const stopTimer = useCallback(() => {
-    pauseTimer();
-    setTime(defaultTime);
-    setState("stop");
-  }, [defaultTime, pauseTimer]);
-
-  const finishTimer = useCallback(() => {
-    stopTimer();
-    onFinish();
-  }, [onFinish, stopTimer]);
-
+  // タイマーを再開する
   const unpauseTimer = useCallback(() => {
     setState("start");
     const id = setInterval(() => {
+      console.log(id);
       setTime((t) => {
         const newTime = t - 1;
-        if (newTime <= 0) finishTimer();
+        if (newTime <= 0) {
+          clearInterval(id);
+          setTimerId(null);
+          setTime(defaultTime);
+          setState("stop");
+          onFinish();
+        }
         return newTime;
       });
     }, 1000);
-    setTimmerId(id);
+    setTimerId(id);
     return () => clearInterval(id);
-  }, [finishTimer]);
+  }, [defaultTime, onFinish]);
 
+  // タイマーを開始する
   const startTimer = useCallback(() => {
     setTime(defaultTime);
     unpauseTimer();
   }, [defaultTime, unpauseTimer]);
+
+  // タイマーを一時停止する
+  const pauseTimer = useCallback(() => {
+    clearInterval(timerId ?? undefined);
+    setTimerId(null);
+    setState("pause");
+  }, [timerId]);
+
+  // タイマーを停止する
+  const stopTimer = useCallback(() => {
+    clearInterval(timerId ?? undefined);
+    setTimerId(null);
+    setTime(defaultTime);
+    setState("stop");
+  }, [defaultTime, timerId]);
 
   return {
     state,

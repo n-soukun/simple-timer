@@ -75,18 +75,19 @@ export const TimerDisplay = ({ timer }: TimerDisplayProps) => {
 
   // タイマーの状態によって表示するテキストを変更
   const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTimerText(e.target.value);
+    const text = e.target.value.replace(/[^0-9:]/g, "");
+    setTimerText(text);
     if (timer.state === "stop") {
-      timer.setDefaultTime(textToSec(e.target.value));
+      timer.setDefaultTime(textToSec(text));
     } else if (timer.state === "pause") {
-      timer.setTime(textToSec(e.target.value));
+      timer.setTime(textToSec(text));
     }
   };
 
   return (
     <div
       className={clsx(
-        "text-8xl text-slate-950 font-bold md:text-[9rem] lg:text-[12rem] drop-shadow-lg transition-colors",
+        "text-8xl text-slate-950 font-robotoMono font-bold md:text-[9rem] lg:text-[12rem] drop-shadow-lg transition-colors",
         {
           "bg-gradient-to-br from-yellow-400 to-red-500 bg-clip-text text-transparent":
             timer.state !== "stop"
@@ -103,10 +104,11 @@ export const TimerDisplay = ({ timer }: TimerDisplayProps) => {
         secToTime(timer.time)
       ) : (
         <input
-          className="bg-transparent text-center w-auto h-24 md:h-36 lg:h-48 focus:outline-none"
+          className="bg-transparent text-center w-[26rem] md:w-[42rem] lg:w-[58rem] h-24 md:h-36 lg:h-48 focus:outline-none"
           type="text"
           value={timerText}
           onChange={onChangeTime}
+          maxLength={9}
         />
       )}
     </div>

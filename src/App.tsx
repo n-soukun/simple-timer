@@ -1,10 +1,18 @@
 import { Button } from "./components/Button";
 import { TimerDisplay } from "./components/TimerDisplay";
 import { useTimer } from "./hooks/useTimer";
-import { HiPause, HiPlay, HiArrowUturnLeft } from "react-icons/hi2";
+import { MdPause, MdPlayArrow, MdReplay } from "react-icons/md";
+
+import alarmSound from "./assets/alarm.mp3";
 
 function App() {
-  const timer = useTimer();
+  const timer = useTimer({
+    onFinish: () => {
+      // ./assets/alarm.mp3を再生
+      const audio = new Audio(alarmSound);
+      audio.play();
+    },
+  });
 
   return (
     <div className="flex flex-col justify-center items-center gap-10 w-full h-screen bg-slate-100">
@@ -12,7 +20,7 @@ function App() {
       <div className="flex gap-2">
         {timer.state === "start" ? (
           <Button
-            startIcon={<HiPause />}
+            startIcon={<MdPause />}
             variant="danger"
             size="lg"
             onClick={() => timer.pause()}
@@ -21,7 +29,7 @@ function App() {
           </Button>
         ) : timer.state === "pause" ? (
           <Button
-            startIcon={<HiPlay />}
+            startIcon={<MdPlayArrow />}
             variant="secondary"
             size="lg"
             onClick={() => timer.unpause()}
@@ -30,7 +38,7 @@ function App() {
           </Button>
         ) : (
           <Button
-            startIcon={<HiPlay />}
+            startIcon={<MdPlayArrow />}
             size="lg"
             onClick={() => timer.start()}
           >
@@ -38,7 +46,7 @@ function App() {
           </Button>
         )}
         <Button
-          startIcon={<HiArrowUturnLeft />}
+          startIcon={<MdReplay />}
           variant="inverse"
           size="lg"
           onClick={() => timer.stop()}
